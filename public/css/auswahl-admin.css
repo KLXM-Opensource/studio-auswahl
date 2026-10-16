@@ -1,0 +1,52 @@
+/* Bildauswahl – Verwaltung (Tokens der Verwaltung: --adm-*) */
+.aw-adm-tabs, .aw-adm-filter { display: flex; flex-wrap: wrap; gap: .25rem; margin: 0 0 1.25rem; border-bottom: 1px solid var(--adm-line, #e5e5e5); }
+.aw-adm-tabs a, .aw-adm-filter a { padding: .5rem .875rem; border-bottom: 2px solid transparent; text-decoration: none; color: inherit; margin-bottom: -1px; }
+.aw-adm-tabs a[aria-current], .aw-adm-filter a[aria-current] { border-color: currentColor; font-weight: 600; }
+.aw-adm-filter { border: 0; }
+.aw-adm-filter a { border: 1px solid var(--adm-line, #e5e5e5); border-radius: 99px; margin: 0; }
+.aw-adm-filter a[aria-current] { background: var(--adm-text, #111); color: var(--adm-bg, #fff); border-color: transparent; }
+.aw-adm-filter span { opacity: .65; font-variant-numeric: tabular-nums; }
+
+.aw-adm-cards { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); }
+.aw-adm-card a { display: grid; height: 100%; color: inherit; text-decoration: none; border: 1px solid var(--adm-line, #e5e5e5); border-radius: .75rem; overflow: hidden; background: var(--adm-card, #fff); transition: box-shadow .2s, transform .2s; }
+.aw-adm-card a:hover { box-shadow: 0 8px 24px rgb(0 0 0 / .08); transform: translateY(-1px); }
+.aw-adm-card__img { display: block; aspect-ratio: 3 / 2; background: var(--adm-soft, #f3f3f1); overflow: hidden; }
+.aw-adm-card__img > picture { height: 100%; border-radius: 0; }
+.aw-adm-card__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.aw-adm-card__body { display: grid; gap: .25rem; padding: .875rem 1rem 1rem; }
+.aw-adm-card__body strong { font-size: 1.0625rem; }
+.aw-adm-card__n { font-variant-numeric: tabular-nums; }
+.aw-adm-card__seen { font-size: .8125rem; }
+.aw-adm-badge { justify-self: start; font-size: .75rem; font-weight: 600; padding: .125rem .5rem; border-radius: 99px; background: var(--adm-soft, #f0f0ee); }
+.aw-adm-badge--submitted { background: #fde7c7; color: #7a3e00; }
+.aw-adm-badge--closed { opacity: .7; }
+:root[data-theme="dark"] .aw-adm-badge--submitted { background: #4a2b07; color: #fcd9a6; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .aw-adm-badge--submitted { background: #4a2b07; color: #fcd9a6; } }
+.aw-adm-empty ol { padding-inline-start: 1.25rem; line-height: 1.6; }
+
+.aw-adm-top { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); margin-bottom: 1rem; }
+@media (min-width: 70rem) { .aw-adm-top { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
+.aw-adm-top .adm-card { margin: 0; }
+.aw-adm-link { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.aw-adm-link code { flex: 1 1 20rem; min-width: 0; overflow-wrap: anywhere; padding: .5rem .75rem; border-radius: .5rem; background: var(--adm-soft, #f3f3f1); font-family: var(--adm-mono, monospace); font-size: .8125rem; }
+.aw-adm-send { display: grid; gap: .5rem; margin-top: 1rem; justify-items: start; }
+.aw-adm-send textarea { width: 100%; box-sizing: border-box; font: inherit; }
+.aw-adm-facts { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
+.aw-adm-facts__img > picture { height: 14rem; }
+.aw-adm-facts__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.aw-adm-facts dl { margin: 0; display: grid; gap: .5rem; }
+.aw-adm-facts dl div { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: .5rem; }
+.aw-adm-facts dt { color: var(--adm-muted, #666); }
+.aw-adm-facts dd { margin: 0; }
+.aw-adm-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.aw-adm-actions form { margin: 0; }
+.aw-adm-row { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; }
+.aw-adm-names { display: grid; gap: .375rem; margin-bottom: 1rem; }
+.aw-adm-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); }
+.aw-adm-grid figure { margin: 0; }
+.aw-adm-grid figure > picture, .aw-adm-card__img > picture, .aw-adm-facts__img > picture { display: block; overflow: hidden; border-radius: .375rem; }
+.aw-adm-grid figure > picture { aspect-ratio: 1; }
+.aw-adm-grid figure > picture img { width: 100%; height: 100%; max-width: none; object-fit: cover; display: block; }
+.aw-adm-grid figcaption { font-size: .8125rem; padding-top: .25rem; font-family: var(--adm-mono, monospace); overflow-wrap: anywhere; }
+.aw-adm-note { display: block; font-family: var(--adm-font, sans-serif); color: var(--adm-muted, #666); margin-top: .125rem; }
+.aw-adm-msg { white-space: normal; }

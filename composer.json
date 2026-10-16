@@ -1,0 +1,11 @@
+{
+    "name": "klxm/studio-auswahl",
+    "description": "KLXM Studio – Bildauswahl für Fotografinnen und Fotografen: Shootings per geheimem Link zeigen, Kunden wählen Fotos und Videos aus, kommentieren und schicken die Auswahl ab",
+    "type": "klxm-studio-extension",
+    "license": "MIT",
+    "keywords": ["klxm-studio", "klxm-studio-extension", "photography", "proofing", "client-gallery", "selection"],
+    "homepage": "https://studio.klxm.de",
+    "authors": [{ "name": "KLXM Crossmedia GmbH and contributors" }],
+    "require": { "php": ">=8.4.1" },
+    "extra": { "klxm-studio": { "entry": "extension.php", "requires-core": ">=1.0.0" } }
+}
