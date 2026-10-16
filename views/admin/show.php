@@ -51,7 +51,36 @@ include __DIR__ . '/_head.php';
   </section>
 </div>
 
-<?php if ($s['message'] !== ''): ?>
+<?php if ($s['pool'] !== ''): ?>
+<section class="adm-card" id="dateien" aria-labelledby="aw-files-h">
+  <div class="aw-adm-row">
+    <h2 id="aw-files-h"><?= e(__('Bilder und Videos')) ?> <span class="adm-count" data-aw-count><?= count($items) ?></span></h2>
+    <?php if (count($items) > 1): ?>
+    <form method="post" action="<?= e(url(Auswahl::ADMIN . '/' . $id . '/sortieren')) ?>"><?= csrf_field() ?><button class="adm-btn adm-btn--small adm-btn--ghost"><?= icon('sort-ascending') ?> <?= e(__('Nach Dateinamen sortieren')) ?></button></form>
+    <?php endif; ?>
+  </div>
+  <div class="aw-adm-drop" data-aw-upload data-chunk="<?= e(url(Auswahl::ADMIN . '/' . $id . '/upload/teil')) ?>" data-finish="<?= e(url(Auswahl::ADMIN . '/' . $id . '/upload/fertig')) ?>"
+    data-csrf="<?= e(\Core\Csrf::token()) ?>" data-limit="<?= (int) \Core\Media::maxBytes() ?>"
+    data-t-done="<?= e(__('{n} Dateien hochgeladen.')) ?>" data-t-big="<?= e(__('Zu groß: {name}')) ?>" data-t-err="<?= e(__('Fehler bei {name}: {err}')) ?>">
+    <?= icon('upload-simple') ?>
+    <p><strong><?= e(__('Fotos und Videos hierher ziehen')) ?></strong><br><span class="adm-muted"><?= e(__('oder auswählen – JPEG, PNG, WebP, HEIC, MP4, MOV, bis {n} MB je Datei. Dateinamen bleiben erhalten.', ['n' => (int) round(\Core\Media::maxBytes() / 1048576)])) ?></span></p>
+    <label class="adm-btn adm-btn--primary"><input type="file" multiple accept="image/*,video/*" data-aw-input hidden> <?= e(__('Dateien auswählen')) ?></label>
+    <ul class="aw-adm-queue" data-aw-queue role="list" aria-live="polite"></ul>
+  </div>
+  <p class="adm-muted"><?= icon('lock') ?> <?= e(__('Geschützter Ordner: Die Dateien liegen außerhalb der Website und sind nur für Sie und für Kunden mit entsperrtem Link abrufbar – nicht in der Mediathek, nicht in der Suche.')) ?></p>
+  <?php if ($items): ?>
+  <ul class="aw-adm-grid aw-adm-grid--files" role="list">
+    <?php foreach ($items as $m): ?>
+    <li><figure><?= AdminController::thumb($m, '10rem') ?><figcaption><?= e(pathinfo((string) ($m['original_name'] ?: $m['file']), PATHINFO_FILENAME)) ?></figcaption></figure>
+      <form method="post" action="<?= e(url(Auswahl::ADMIN . '/' . $id . '/datei/' . (int) $m['id'] . '/entfernen')) ?>" data-confirm="<?= e(__('„{name}“ endgültig löschen?', ['name' => (string) $m['original_name']])) ?>">
+        <?= csrf_field() ?><button class="aw-adm-x" aria-label="<?= e(__('Entfernen: {name}', ['name' => (string) $m['original_name']])) ?>"><?= icon('trash') ?></button></form></li>
+    <?php endforeach; ?>
+  </ul>
+  <?php endif; ?>
+</section>
+<?php endif; ?>
+
+<?php if (trim((string) $s['message']) !== ''): ?>
 <section class="adm-card"><h2><?= e(__('Nachricht')) ?></h2><p class="aw-adm-msg"><?= nl2br(e($s['message']), false) ?></p></section>
 <?php endif; ?>
 
@@ -89,6 +118,6 @@ include __DIR__ . '/_head.php';
   <div class="aw-adm-actions">
     <form method="post" action="<?= e(url(Auswahl::ADMIN . '/' . $id . '/neuer-link')) ?>" data-confirm="<?= e(__('Neuen Link erzeugen? Der bisherige Link funktioniert danach nicht mehr.')) ?>"><?= csrf_field() ?><button class="adm-btn adm-btn--small adm-btn--ghost"><?= e(__('Neuen Link erzeugen')) ?></button></form>
     <form method="post" action="<?= e(url(Auswahl::ADMIN . '/' . $id . '/zuruecksetzen')) ?>" data-confirm="<?= e(__('Auswahl und Notizen dieses Shootings löschen?')) ?>"><?= csrf_field() ?><button class="adm-btn adm-btn--small adm-btn--ghost"><?= e(__('Auswahl zurücksetzen')) ?></button></form>
-    <form method="post" action="<?= e(url(Auswahl::ADMIN . '/' . $id . '/loeschen')) ?>" data-confirm="<?= e(__('Shooting „{title}“ löschen? Die Dateien bleiben in der Mediathek.', ['title' => $s['title']])) ?>"><?= csrf_field() ?><button class="adm-btn adm-btn--small adm-btn--danger"><?= e(__('Shooting löschen')) ?></button></form>
+    <form method="post" action="<?= e(url(Auswahl::ADMIN . '/' . $id . '/loeschen')) ?>" data-confirm="<?= e($s['pool'] !== '' ? __('Shooting „{title}“ samt aller Dateien endgültig löschen?', ['title' => $s['title']]) : __('Shooting „{title}“ löschen? Die Dateien bleiben in der Mediathek.', ['title' => $s['title']])) ?>"><?= csrf_field() ?><button class="adm-btn adm-btn--small adm-btn--danger"><?= e(__('Shooting löschen')) ?></button></form>
   </div>
 </section>

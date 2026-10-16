@@ -25,6 +25,7 @@ final class Repo
                 ->column('email', 'string', ['length' => 191, 'default' => ''])
                 ->column('intro', 'text')
                 ->column('collection_id', 'int', ['default' => 0])
+                ->column('pool', 'string', ['length' => 32, 'default' => ''])
                 ->column('cover_id', 'int', ['default' => 0])
                 ->column('shoot_date', 'string', ['length' => 10, 'default' => ''])
                 ->column('token', 'string', ['length' => 64, 'null' => false])
@@ -61,11 +62,11 @@ final class Repo
     public static function shoots(string $status = ''): array
     {
         $where = in_array($status, self::STATUS, true) ? 'WHERE s.status = ?' : '';
-        return self::db()->fetchAll("SELECT s.*,
-                (SELECT COUNT(*) FROM media_collection_items i JOIN media m ON m.id = i.media_id AND m.deleted_at IS NULL WHERE i.collection_id = s.collection_id) AS count,
+        $rows = self::db()->fetchAll("SELECT s.*,
                 (SELECT COUNT(*) FROM auswahl_picks p WHERE p.shoot_id = s.id AND p.picked = 1) AS picked
             FROM auswahl_shoots s $where ORDER BY CASE s.status WHEN 'submitted' THEN 0 WHEN 'open' THEN 1 ELSE 2 END, COALESCE(s.updated_at, s.created_at) DESC",
             $where ? [$status] : []);
+        return array_map(fn($s) => $s + ['count' => count(self::items($s))], $rows);
     }
 
     public static function find(int $id): ?array
@@ -92,8 +93,17 @@ final class Repo
         self::db()->update('auswahl_shoots', $data + ['updated_at' => now()], 'id = :id', ['id' => $id]);
     }
 
-    public static function delete(int $id): void
+    /** Shooting löschen; $files: bei Shootings im eigenen Pool auch Dateien und Sammlung */
+    public static function delete(int $id, bool $files = false): void
     {
+        $s = self::find($id);
+        if ($files && $s && (string) $s['pool'] !== '') {
+            self::inPool($s, function () use ($s): void {
+                foreach (self::items($s) as $m) Media::delete((int) $m['id']);
+                Media::db()->query('DELETE FROM media_collection_items WHERE collection_id = ?', [(int) $s['collection_id']]);
+                Media::db()->query('DELETE FROM media_collections WHERE id = ?', [(int) $s['collection_id']]);
+            });
+        }
         self::db()->query('DELETE FROM auswahl_picks WHERE shoot_id = ?', [$id]);
         self::db()->query('DELETE FROM auswahl_shoots WHERE id = ?', [$id]);
     }
@@ -115,22 +125,46 @@ final class Repo
 
     // ------------------------------------------------------------------ Dateien und Auswahl
 
+    /**
+     * Im Medien-Kontext des Shootings arbeiten: eigener geschützter Pool (Spalte pool) oder Mediathek der Website (leer).
+     * Gibt das Ergebnis von $fn zurück und stellt den vorherigen Kontext wieder her.
+     */
+    public static function inPool(array $shoot, callable $fn): mixed
+    {
+        $prev = Media::pool();
+        $pool = (string) ($shoot['pool'] ?? '');
+        Media::usePool($pool !== '' && \Core\MediaPools::available($pool) ? $pool : null);
+        try {
+            return $fn();
+        } finally {
+            Media::usePool($prev);
+        }
+    }
+
+    /** Pool-Angaben an Zeilen hängen, damit Adressen auch außerhalb von inPool() stimmen (Media::url, pictureOf) */
+    private static function tag(array $shoot, array $rows): array
+    {
+        $pool = (string) ($shoot['pool'] ?? '');
+        if ($pool === '') return $rows;
+        return array_map(fn($m) => $m + ['_pool' => $pool, '_pool_id' => (int) $m['id']], $rows);
+    }
+
     /** Bilder und Videos der Sammlung in ihrer Reihenfolge (ohne gelöschte, ohne andere Dateiarten) */
     public static function items(array $shoot): array
     {
         $cid = (int) $shoot['collection_id'];
         if (!$cid) return [];
-        return self::db()->fetchAll("SELECT m.* FROM media_collection_items i JOIN media m ON m.id = i.media_id
+        return self::tag($shoot, self::inPool($shoot, fn() => Media::db()->fetchAll("SELECT m.* FROM media_collection_items i JOIN media m ON m.id = i.media_id
             WHERE i.collection_id = ? AND m.deleted_at IS NULL AND (m.mime LIKE 'image/%' OR m.mime LIKE 'video/%') AND m.mime <> 'image/svg+xml'
-            ORDER BY i.sort, m.id", [$cid]);
+            ORDER BY i.sort, m.id", [$cid])));
     }
 
     /** Gehört die Datei zum Shooting? */
     public static function hasItem(array $shoot, int $mediaId): bool
     {
-        return (bool) self::db()->fetchValue("SELECT 1 FROM media_collection_items i JOIN media m ON m.id = i.media_id
+        return (bool) self::inPool($shoot, fn() => Media::db()->fetchValue("SELECT 1 FROM media_collection_items i JOIN media m ON m.id = i.media_id
             WHERE i.collection_id = ? AND i.media_id = ? AND m.deleted_at IS NULL AND (m.mime LIKE 'image/%' OR m.mime LIKE 'video/%')",
-            [(int) $shoot['collection_id'], $mediaId]);
+            [(int) $shoot['collection_id'], $mediaId]));
     }
 
     /** @return array<int, array{picked: bool, note: string}> media_id → Auswahl */
@@ -181,7 +215,7 @@ final class Repo
     /** Titelbild: gewähltes Bild, sonst das erste Bild der Sammlung */
     public static function cover(array $shoot): ?array
     {
-        if ((int) $shoot['cover_id'] && ($m = Media::find((int) $shoot['cover_id'])) && str_starts_with((string) $m['mime'], 'image/')) return $m;
+        if ((int) $shoot['cover_id'] && ($m = self::inPool($shoot, fn() => Media::find((int) $shoot['cover_id']))) && str_starts_with((string) $m['mime'], 'image/')) return $m;
         foreach (self::items($shoot) as $m) if (str_starts_with((string) $m['mime'], 'image/')) return $m;
         return null;
     }

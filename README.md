@@ -8,7 +8,7 @@ Lizenz: MIT (`LICENSE`). Paket: `klxm/studio-auswahl`. Für [KLXM Studio](https:
 
 | | |
 |---|---|
-| Shooting | Dateien = eine Sammlung der Mediathek (Reihenfolge, Dateinamen, Bilder und Videos). Titel, Datum, Begrüßung, Kunde mit E-Mail, Sprache. |
+| Shooting | Eigener **geschützter Ordner** je Shooting (Pool „Shootings“ der Website, außerhalb von `public/`): Fotos und Videos direkt im Shooting hochladen (in Stücken, auch große Videos), entfernen, nach Dateinamen sortieren – die Mediathek der Website bleibt frei. Alternativ eine vorhandene Sammlung der Mediathek. Titel, Datum, Begrüßung, Kunde mit E-Mail, Sprache. |
 | Regeln | Dateien im Paket (Obergrenze), Frist („Auswahl bis“), optionale PIN (4–12 Zeichen, getrennt vom Link weitergeben), Notizen je Bild, Herunterladen der Originale. |
 | Link | `/auswahl/{token}` (32 Zeichen, zufällig). „Neuen Link erzeugen“ macht den alten ungültig; eine neue PIN sperrt offene Sitzungen. Einladung per E-Mail (die PIN steht nie darin). |
 | Für Kunden | Raster in Originalformaten mit Nummer und Dateiname, Herz zum Auswählen, Zähler „3 / 20“ mit Fortschritt, Filter „Ausgewählt“ und „Mit Notiz“, Großansicht (Pfeiltasten, Wischen, `P` wählt aus, Notiz, Herunterladen), „Auswahl abschicken“ mit Nachricht. Alles wird sofort gespeichert. |
@@ -31,7 +31,8 @@ Recht „Bildauswahl verwalten“ (`auswahl.manage`) an die passenden Rollen geb
 
 - Link-Token mit 24 Zufallsbytes, Vergleich in konstanter Zeit; PIN nur als `password_hash`, höchstens 8 Versuche je Anschluss und Shooting in 15 Minuten.
 - Alle Änderungen nur mit CSRF-Token der Sitzung, nach Entsperrung, für Dateien der Sammlung, innerhalb von Frist, Paket und Status; Begrenzung je Anschluss.
-- Seiten privat, nie im Seiten-Cache, `noindex`, `Referrer-Policy: no-referrer`. Bilder haben zufällige Adressen; wer eine einzelne Bildadresse weitergibt, gibt dieses Bild weiter – für vertrauliche Shootings eine PIN setzen.
+- Seiten privat, nie im Seiten-Cache, `noindex`, `Referrer-Policy: no-referrer`.
+- Dateien im geschützten Ordner (`/geschuetzt/aw-{website}/…`) liefert der Kern nur an die Redaktion oder an Sitzungen, in denen ein Shooting entsperrt ist, zu dem die Datei gehört (`Extension::mediaAccess`) – eine weitergegebene Bildadresse funktioniert ohne den Link nicht. Andere Erweiterungen (z. B. members) greifen auf diesen Pool nicht zu (`pool.json` `owner`). Shootings aus einer Sammlung der Mediathek haben öffentliche, zufällige Adressen.
 
 ## Doku
 

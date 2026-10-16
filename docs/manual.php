@@ -2,8 +2,9 @@
   <p class="lead">Mit der <b>Bildauswahl</b> zeigen Sie ein Shooting Ihrer Kundin oder Ihrem Kunden über einen geheimen Link. Dort werden Fotos und Videos angesehen, mit einem Herz ausgewählt, auf Wunsch mit Notizen versehen und die Auswahl verbindlich abgeschickt – ohne Konto und ohne App.</p>
   <h3>Ein Shooting anlegen</h3>
   <ol>
-    <li>In der <b>Mediathek</b> eine neue Sammlung anlegen (z. B. „Hochzeit Anna &amp; Ben“) und die Bilder und Videos hineinladen. Reihenfolge und Dateinamen übernimmt die Auswahl.</li>
-    <li>Menü <b>Bildauswahl → Neues Shooting</b>: Titel, Sammlung, Datum, eine kurze Begrüßung, Name und E-Mail-Adresse.</li>
+    <li>Menü <b>Bildauswahl → Neues Shooting</b>: Titel, Datum, eine kurze Begrüßung, Name und E-Mail-Adresse.</li>
+    <li>Auf der Seite des Shootings die Fotos und Videos in die Fläche <b>„Fotos und Videos hierher ziehen“</b> ziehen (oder auswählen). Große Videos werden in Stücken übertragen. Dateinamen bleiben erhalten; <b>Nach Dateinamen sortieren</b> ordnet DSC_2 vor DSC_10.</li>
+    <li>Die Dateien liegen in einem <b>geschützten Ordner</b> außerhalb der Website: nicht in der Mediathek, nicht in der Suche, nur für Sie und für Kunden mit dem Link abrufbar. Wer möchte, wählt stattdessen eine vorhandene Sammlung der Mediathek.</li>
     <li>Regeln: <b>Dateien im Paket</b> (z. B. 20 – mehr lassen sich nicht auswählen; 0 = beliebig viele), <b>Auswahl bis</b> (Frist), <b>PIN</b> (4–12 Ziffern oder Buchstaben, getrennt vom Link weitergeben, z. B. per SMS), Notizen erlauben, Herunterladen der Originale erlauben.</li>
   </ol>
   <h3>Link teilen</h3>
@@ -26,7 +27,8 @@
   </ul>
   <h3>Gut zu wissen</h3>
   <ul>
-    <li>Die Bilder haben zufällige Adressen, die niemand erraten kann. Wer die Adresse eines einzelnen Bildes weitergibt, gibt dieses Bild weiter – für vertrauliche Shootings zusätzlich eine PIN setzen.</li>
+    <li>Im geschützten Ordner funktioniert eine weitergegebene Bildadresse ohne den Link des Shootings nicht. Für vertrauliche Shootings zusätzlich eine PIN setzen.</li>
+    <li>Ein Shooting mit eigenem Ordner zu löschen, löscht auch seine Dateien.</li>
     <li>Die Seiten der Auswahl erscheinen nie in der Suche, in der Sitemap oder bei Suchmaschinen.</li>
     <li>Hinweise an das Studio gehen an die Empfänger der Website oder an die Adressen unter <b>Bildauswahl → Einstellungen</b>.</li>
   </ul>

@@ -12,6 +12,6 @@ unset($values['pin'], $values['pin_hash']);
 <?php if ($shoot && $shoot['pin_hash'] !== ''): ?><p class="adm-muted"><?= icon('lock') ?> <?= e(__('Dieses Shooting ist mit einer PIN geschützt.')) ?></p><?php endif; ?>
 <form method="post" action="<?= e(url($action)) ?>" novalidate>
   <?= csrf_field() ?>
-  <section class="adm-card"><div class="adm-fields"><?= Fields::renderForm(AdminController::fields($shoot === null), $values, $errors, 'f') ?></div></section>
+  <section class="adm-card"><div class="adm-fields"><?= Fields::renderForm(AdminController::fields($shoot === null, !empty($pool)), $values, $errors, 'f') ?></div></section>
   <div class="adm-savebar"><button class="adm-btn adm-btn--primary"><?= e($shoot ? __('Speichern') : __('Shooting anlegen')) ?></button></div>
 </form>

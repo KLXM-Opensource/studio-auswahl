@@ -6,7 +6,7 @@ if (root) {
   const $ = (s, el = root) => el.querySelector(s);
   const items = () => [...root.querySelectorAll('[data-aw-item]')];
   const editable = root.dataset.editable === '1';
-  const max = +root.dataset.max || 0;
+  const max = +root.dataset.package || 0;
   const T = k => root.dataset['t' + k[0].toUpperCase() + k.slice(1)] || '';
   const fill = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? '');
   let filter = 'all';

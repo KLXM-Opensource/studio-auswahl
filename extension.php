@@ -25,7 +25,7 @@ use Klxm\Auswahl\SiteController;
 return [
     'name' => 'auswahl',
     'label' => 'Bildauswahl – Kunden wählen Fotos und Videos aus',
-    'version' => '0.1.0',
+    'version' => '0.2.0',
     'requires' => '>=1.0.0',
     'description' => 'Shootings per geheimem Link zeigen (optional mit PIN): Kundinnen und Kunden wählen Fotos und Videos aus, schreiben Notizen und schicken die Auswahl ab.',
     'author' => 'KLXM Crossmedia GmbH and contributors',
@@ -50,7 +50,7 @@ return [
 
         $x->adminPage(['href' => Auswahl::ADMIN, 'label' => 'Bildauswahl', 'kind' => 'content', 'icon' => 'camera', 'perm' => Auswahl::PERM,
             'feature' => Auswahl::FEATURE, 'description' => 'Shootings zeigen, Kunden wählen Fotos und Videos aus']);
-        $x->adminAssets(fn(string $view) => $view === 'auswahl' ? ['css/auswahl-admin.css'] : []);
+        $x->adminAssets(fn(string $view) => $view === 'auswahl' ? ['css/auswahl-admin.css', 'js/auswahl-admin.js'] : []);
 
         // Übersicht (/admin): eingegangene Auswahl als Kachel
         $x->dashboard(function (array $user): array {
@@ -60,6 +60,9 @@ return [
             return ['tiles' => [['key' => 'auswahl-eingegangen', 'label' => __('Bildauswahl eingegangen'), 'value' => (string) $c['submitted'],
                 'text' => __('{n} offen', ['n' => $c['open']]), 'href' => Auswahl::ADMIN . '?status=submitted']]];
         });
+
+        // Geschützter Pool „Shootings“: Dateien nur für Sitzungen mit entsperrtem Shooting (Redaktion prüft der Kern)
+        $x->mediaAccess(fn(array $ctx, Core\Http\Request $r): bool => Auswahl::mediaAllowed($ctx, $r));
 
         // Mediathek → Informationen einer Datei: in welchen Shootings sie steckt
         $x->mediaPanel(function (array $m): array {
@@ -100,6 +103,10 @@ return [
             $r->post($a . '/{id}/zuruecksetzen', [$c, 'reset'], $p);
             $r->post($a . '/{id}/loeschen', [$c, 'delete'], $p);
             $r->get($a . '/{id}/auswahl.csv', [$c, 'csv'], $p);
+            $r->post($a . '/{id}/upload/teil', [$c, 'chunk'], $p);
+            $r->post($a . '/{id}/upload/fertig', [$c, 'finish'], $p);
+            $r->post($a . '/{id}/datei/{mid}/entfernen', [$c, 'removeFile'], $p);
+            $r->post($a . '/{id}/sortieren', [$c, 'sort'], $p);
         });
 
         $x->docs('manual', ['bildauswahl' => ['title' => 'Bildauswahl', 'after' => 'medien', 'file' => __DIR__ . '/docs/manual.php']]);

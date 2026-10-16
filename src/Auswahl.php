@@ -45,7 +45,8 @@ final class Auswahl
     /** Ist das Shooting in dieser Sitzung entsperrt (PIN eingegeben bzw. ohne PIN geöffnet)? */
     public static function unlocked(array $shoot): bool
     {
-        if ((string) $shoot['pin_hash'] === '') return true;
+        if ((string) $shoot['pin_hash'] === '' && (string) ($shoot['pool'] ?? '') === '') return true;
+        if (!app()->session->started()) return false;
         $ok = app()->session->get('auswahl_ok');
         return is_array($ok) && hash_equals((string) ($ok[(int) $shoot['id']] ?? ''), self::seal($shoot));
     }
@@ -62,6 +63,59 @@ final class Auswahl
     private static function seal(array $shoot): string
     {
         return hash_hmac('sha256', $shoot['token'] . '|' . $shoot['pin_hash'], app()->key());
+    }
+
+    // ------------------------------------------------------------------ Eigener geschützter Pool
+
+    /** Kurzname des Pools dieser Website (je Website ein eigener Pool, z. B. „aw-default“) */
+    public static function poolKey(): string
+    {
+        return 'aw-' . substr(trim((string) preg_replace('~[^a-z0-9-]+~', '-', strtolower(site()->key)), '-') ?: 'site', 0, 29);
+    }
+
+    /**
+     * Geschützten Pool „Shootings“ dieser Website anlegen bzw. freigeben: Dateien außerhalb von public/, Adresse /geschuetzt/…,
+     * nur für diese Website (nutzen und pflegen), Eigentümer „auswahl“ (andere Erweiterungen wie members greifen nicht darauf zu).
+     */
+    public static function ensurePool(): string
+    {
+        $key = self::poolKey();
+        $site = site()->key;
+        if (!is_file(\Core\MediaPools::dir($key) . '/pool.json')) {
+            \Core\MediaPools::create($key, 'Shootings (Bildauswahl)', [$site], ['protected' => true, 'editors' => [$site], 'owner' => self::NAME]);
+        } elseif (!in_array($site, (array) \Core\MediaPools::meta($key)['sites'], true)) {
+            \Core\MediaPools::update($key, (string) \Core\MediaPools::meta($key)['label'], array_merge((array) \Core\MediaPools::meta($key)['sites'], [$site]), [$site]);
+        }
+        return $key;
+    }
+
+    /**
+     * Zugriff auf Dateien des eigenen Pools (Extension::mediaAccess): nur, wenn in dieser Sitzung ein Shooting entsperrt ist,
+     * zu dessen Sammlung die Datei gehört (Original, Größen, Vorschaubild eines Videos). Andere Pools: nicht zuständig.
+     */
+    public static function mediaAllowed(array $ctx, Request $r): bool
+    {
+        $pool = (string) ($ctx['pool'] ?? '');
+        if (!str_starts_with($pool, 'aw-')) return false;
+        // Sitzung nur fortsetzen, wenn es schon eine gibt (kein neues Cookie für fremde Abrufe)
+        if (!app()->session->started()) {
+            if (!app()->session->hasCookie()) return false;
+            self::startSession($r);
+        }
+        $ok = app()->session->get('auswahl_ok');
+        if (!is_array($ok) || !$ok) return false;
+        if (!preg_match('~(?:^|/)([0-9a-f]{16})~', (string) ($ctx['path'] ?? ''), $m)) return false;
+        $ids = array_map('intval', array_keys($ok));
+        $shoots = app()->db->fetchAll('SELECT * FROM auswahl_shoots WHERE pool = ? AND status <> ? AND id IN (' . implode(',', $ids) . ')', [$pool, 'closed']);
+        $db = \Core\MediaPools::db($pool);
+        foreach ($shoots as $s) {
+            if (!self::unlocked($s)) continue;
+            $hit = $db->fetchValue("SELECT 1 FROM media_collection_items i JOIN media m ON m.id = i.media_id
+                WHERE i.collection_id = ? AND m.deleted_at IS NULL AND (m.file LIKE ? OR m.variants_json LIKE ?) LIMIT 1",
+                [(int) $s['collection_id'], '%' . $m[1] . '%', '%' . $m[1] . '%']);
+            if ($hit) return true;
+        }
+        return false;
     }
 
     /** Frist abgelaufen? (Frist gilt bis Ende des Tages) */

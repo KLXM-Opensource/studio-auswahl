@@ -1,5 +1,11 @@
 # Changelog – Bildauswahl
 
+## 0.2.0 – 2026-10-16
+
+- **Geschützter Ordner je Shooting:** Neue Shootings bekommen eine eigene Sammlung im geschützten Pool „Shootings“ der Website – die Mediathek bleibt frei. Fotos und Videos direkt im Shooting hochladen (Ablagefläche, in Stücken, mit Fortschritt), entfernen, nach Dateinamen sortieren. Löschen eines Shootings löscht seine Dateien.
+- **Zugriff nur mit Link:** Dateien des Pools liefert der Kern nur an Sitzungen mit entsperrtem Shooting (Extension::mediaAccess); eine weitergegebene Bildadresse allein genügt nicht mehr.
+- Vorhandene Sammlungen der Mediathek bleiben als Alternative wählbar.
+
 ## 0.1.0 – 2026-10-16
 
 - Erste Fassung: Shootings aus Sammlungen der Mediathek per geheimem Link (optional mit PIN), Auswahl per Herz mit Paketgrenze und Frist, Notizen je Bild, Großansicht mit Tastatur und Wischen, Herunterladen der Originale (Schalter), verbindliches Abschicken mit Nachricht.

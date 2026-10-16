@@ -66,6 +66,7 @@ final class SiteController
     {
         $s = $this->shoot($r, $token);
         if (!Auswahl::viewable($s)) return $this->message(lt('Auswahl abgeschlossen'), lt('Dieses Shooting ist abgeschlossen. Bei Fragen wenden Sie sich bitte an {name}.', ['name' => site_name()]), 410);
+        if ((string) $s['pin_hash'] === '' && !Auswahl::unlocked($s)) Auswahl::unlock($s);   // ohne PIN: Link genügt (Siegel für geschützte Dateien)
         if (!Auswahl::unlocked($s)) return $this->page('pin', ['shoot' => $s, 'error' => ''], (string) $s['title']);
         // Besuch zählen (höchstens einmal je Sitzung)
         $seen = app()->session->get('auswahl_seen');
@@ -166,7 +167,7 @@ final class SiteController
         $s = $this->shoot($r, $token);
         if (!(int) $s['allow_download'] || !Auswahl::viewable($s) || !Auswahl::unlocked($s)) throw new HttpException(404);
         $mid = (int) $id;
-        if (!Repo::hasItem($s, $mid) || !($m = Media::find($mid))) throw new HttpException(404);
+        if (!Repo::hasItem($s, $mid) || !($m = Repo::inPool($s, fn() => Media::find($mid)))) throw new HttpException(404);
         $file = Media::localFile($m);
         if (!is_file($file)) throw new HttpException(404);
         $name = (string) preg_replace('~[^A-Za-z0-9._-]+~', '-', (string) ($m['original_name'] ?: basename($file))) ?: 'datei';

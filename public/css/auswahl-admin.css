@@ -50,3 +50,18 @@
 .aw-adm-grid figcaption { font-size: .8125rem; padding-top: .25rem; font-family: var(--adm-mono, monospace); overflow-wrap: anywhere; }
 .aw-adm-note { display: block; font-family: var(--adm-font, sans-serif); color: var(--adm-muted, #666); margin-top: .125rem; }
 .aw-adm-msg { white-space: normal; }
+.aw-adm-drop { display: grid; justify-items: center; gap: .75rem; text-align: center; padding: 1.75rem 1rem; margin: 1rem 0; border: 2px dashed var(--adm-line, #d6d6d6); border-radius: .75rem; transition: border-color .15s, background .15s; }
+.aw-adm-drop > svg { width: 2rem; height: 2rem; opacity: .6; }
+.aw-adm-drop p { margin: 0; }
+.aw-adm-drop.is-over { border-color: var(--adm-accent, #2457c5); background: color-mix(in srgb, var(--adm-accent, #2457c5) 6%, transparent); }
+.aw-adm-queue { list-style: none; margin: 0; padding: 0; width: min(100%, 36rem); display: grid; gap: .375rem; text-align: start; }
+.aw-adm-queue li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .25rem .75rem; font-size: .8125rem; }
+.aw-adm-queue li > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%; }
+.aw-adm-queue li.is-bad > span:nth-child(2) { flex-basis: 100%; }
+.aw-adm-queue progress { flex-basis: 100%; width: 100%; height: .375rem; }
+.aw-adm-queue .is-bad { color: var(--adm-danger, #b42318); }
+.aw-adm-grid--files li { position: relative; }
+.aw-adm-grid--files form { position: absolute; top: .375rem; right: .375rem; margin: 0; }
+.aw-adm-x { width: 2rem; height: 2rem; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; color: #fff; background: rgb(0 0 0 / .55); opacity: 0; transition: opacity .15s; }
+.aw-adm-grid--files li:hover .aw-adm-x, .aw-adm-x:focus-visible { opacity: 1; }
+@media (hover: none) { .aw-adm-x { opacity: 1; } }

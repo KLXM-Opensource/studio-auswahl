@@ -18,7 +18,7 @@ $state = $shoot['status'] === 'submitted' ? 'submitted' : ($expired ? 'expired' 
 ?>
 <div class="aw" data-aw
   data-csrf="<?= e(\Core\Csrf::token()) ?>" data-pick="<?= e(Auswahl::link($shoot, 'wahl')) ?>" data-note="<?= e(Auswahl::link($shoot, 'notiz')) ?>"
-  data-max="<?= $max ?>" data-editable="<?= $editable ? '1' : '0' ?>" data-comments="<?= $comments ? '1' : '0' ?>"
+  data-package="<?= $max ?>" data-editable="<?= $editable ? '1' : '0' ?>" data-comments="<?= $comments ? '1' : '0' ?>"
   data-t-pick="<?= e(lt('Auswählen')) ?>" data-t-picked="<?= e(lt('Ausgewählt')) ?>" data-t-saved="<?= e(lt('Gespeichert')) ?>"
   data-t-error="<?= e(lt('Das hat nicht geklappt. Bitte erneut versuchen.')) ?>" data-t-of="<?= e(lt('{i} von {n}')) ?>"
   data-t-count="<?= e($max ? lt('{n} von {max} ausgewählt') : lt('{n} ausgewählt')) ?>">
