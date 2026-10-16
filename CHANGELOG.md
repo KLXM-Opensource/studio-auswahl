@@ -2,7 +2,7 @@
 
 ## 0.3.0 – 2026-10-16
 
-- **Schutz bis zur Freigabe:** Kunden sehen nur Bildschirmfassungen (höchstens 1800 px) mit eingerechnetem Wasserzeichen, Videos als 720p-Vorschau mit Wasserzeichen (ffmpeg, im Hintergrund und als geplante Aufgabe `auswahl:videos`). Die Originale sind ohne Freigabe auch für entsperrte Sitzungen gesperrt; Rechtsklick und Ziehen auf Bildern sind abgeschaltet.
+- **Schutz bis zur Freigabe:** Kunden sehen im Raster kleine Vorschauen (560 px, ohne Wasserzeichen) und in der Großansicht höchstens 1800 px mit eingerechnetem Wasserzeichen, Videos als 720p-Vorschau mit Wasserzeichen (ffmpeg, im Hintergrund und als geplante Aufgabe `auswahl:videos`). Die Originale sind ohne Freigabe auch für entsperrte Sitzungen gesperrt; Rechtsklick und Ziehen auf Bildern sind abgeschaltet.
 - **Freigabe** im Shooting („Freigegeben: Originale ohne Wasserzeichen“): Ansicht ohne Wasserzeichen und Herunterladen der Originale. Text des Wasserzeichens unter Einstellungen.
 - Großansicht: Bilder gleiten beim Blättern mit Überblendung, öffnen mit leichtem Zoom; schnelles Blättern hinterlässt keine Reste.
 

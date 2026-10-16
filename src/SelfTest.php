@@ -113,6 +113,8 @@ final class SelfTest
             $big = Preview::image($s, $items[0], 'l');
             $eq('Vorschau: WebP, höchstens ' . Preview::SIZES['l'] . ' px, nicht das Original', $big && str_ends_with($big, '.webp') && max(array_slice(getimagesize($big) ?: [0, 0], 0, 2)) <= Preview::SIZES['l']
                 && realpath($big) !== realpath(\Core\Media::localFile($items[0])), true);
+            $small = Preview::image($s, $items[0], 's');
+            $eq('Raster klein (≤ ' . Preview::SIZES['s'] . ' px)', $small && max(array_slice(getimagesize($small) ?: [9999, 9999], 0, 2)) <= Preview::SIZES['s'], true);
             $eq('Wasserzeichen ohne Freigabe, keins mit Freigabe', [Preview::mark($s) !== '', Preview::mark(['allow_download' => 1] + $s)], [true, '']);
             $eq('fremder Pool: nicht zuständig', Auswahl::mediaAllowed(['pool' => 'mitglieder', 'path' => $path], new \Core\Http\Request('GET', '/', [], [], [], [])), false);
         } finally {

@@ -9,7 +9,7 @@
   </ol>
   <h3>Schutz bis zur Freigabe</h3>
   <ul>
-    <li>Solange Sie ein Shooting nicht freigeben, sehen Ihre Kunden nur <b>Vorschauen in Bildschirmgröße mit Wasserzeichen</b> – nie die Originale. Videos erscheinen als Vorschau in 720p, ebenfalls mit Wasserzeichen; sie entsteht kurz nach dem Hochladen im Hintergrund.</li>
+    <li>Solange Sie ein Shooting nicht freigeben, sehen Ihre Kunden im Raster kleine Vorschaubilder und in der Großansicht <b>Bildschirmfassungen mit Wasserzeichen</b> – nie die Originale. Videos erscheinen als Vorschau in 720p, ebenfalls mit Wasserzeichen; sie entsteht kurz nach dem Hochladen im Hintergrund.</li>
     <li>Ohne Freigabe können Kunden nur auswählen und Notizen schreiben. Wer ein Bild trotzdem speichert, hat das Wasserzeichen im Bild.</li>
     <li><b>Freigeben</b>: Shooting bearbeiten → „Freigegeben: Originale ohne Wasserzeichen“. Danach sind die Bilder ohne Wasserzeichen zu sehen und die Originale lassen sich herunterladen – ideal, um die fertigen Bilder über denselben Link abzugeben.</li>
     <li>Den Text des Wasserzeichens legen Sie unter <b>Bildauswahl → Einstellungen</b> fest (Standard: „© Name der Website · Vorschau“).</li>

@@ -9,14 +9,16 @@ use Core\Media;
 
 /**
  * Vorschauen für Kundinnen und Kunden – nie das Original, solange das Studio nicht freigegeben hat:
- *   - Bilder: höchstens SIZES['l'] Pixel an der langen Kante, WebP, Wasserzeichen ins Bild gerechnet (GD, Lato aus dem Kern)
+ *   - Bilder: Raster klein (SIZES['s'], ohne Wasserzeichen – zu klein zum Weiterverwenden), Großansicht höchstens SIZES['l'] Pixel
+ *     mit Wasserzeichen ins Bild gerechnet (GD, Lato aus dem Kern); beides WebP
  *   - Videos: 720p-MP4 mit Wasserzeichen (ffmpeg), erzeugt nach der Antwort einer Verwaltungsseite (Extension::afterAdminResponse)
  * Freigegeben (Schalter allow_download): Bildschirmfassungen ohne Wasserzeichen, Originale über …/datei/{id}.
  * Zwischenspeicher außerhalb von public/: storage/auswahl/{website}/{shooting}/ – Name enthält Größe, Wasserzeichen und Stand.
  */
 final class Preview
 {
-    public const SIZES = ['s' => 720, 'l' => 1800];
+    /** s = Raster (klein, ohne Wasserzeichen), l = Großansicht (mit Wasserzeichen bis zur Freigabe) */
+    public const SIZES = ['s' => 560, 'l' => 1800];
 
     public static function dir(array $s): string
     {
@@ -33,7 +35,7 @@ final class Preview
 
     private static function key(array $s, array $m, string $what): string
     {
-        return (int) $m['id'] . '-' . $what . '-' . substr(sha1(self::mark($s) . '|' . ($m['updated_at'] ?? '') . '|' . ($m['file'] ?? '')), 0, 10);
+        return (int) $m['id'] . '-' . $what . '-' . substr(sha1(($what === 's' ? '' : self::mark($s)) . '|' . ($m['updated_at'] ?? '') . '|' . ($m['file'] ?? '')), 0, 10);
     }
 
     /** Datei der Bildvorschau (erzeugt bei Bedarf) oder null */
@@ -51,7 +53,7 @@ final class Preview
         $im = self::load($in);
         if (!$im) return null;
         $im = self::fit($im, $w);
-        if (($t = self::mark($s)) !== '') self::watermark($im, $t);
+        if ($size !== 's' && ($t = self::mark($s)) !== '') self::watermark($im, $t);
         if (!is_dir(dirname($file))) @mkdir(dirname($file), 0770, true);
         $tmp = $file . '.' . bin2hex(random_bytes(4));
         imagewebp($im, $tmp, 80);
