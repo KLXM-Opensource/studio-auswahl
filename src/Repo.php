@@ -104,6 +104,7 @@ final class Repo
                 Media::db()->query('DELETE FROM media_collections WHERE id = ?', [(int) $s['collection_id']]);
             });
         }
+        if ($s) Preview::forget($s);
         self::db()->query('DELETE FROM auswahl_picks WHERE shoot_id = ?', [$id]);
         self::db()->query('DELETE FROM auswahl_shoots WHERE id = ?', [$id]);
     }

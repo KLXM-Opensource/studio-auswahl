@@ -9,9 +9,11 @@ Lizenz: MIT (`LICENSE`). Paket: `klxm/studio-auswahl`. Für [KLXM Studio](https:
 | | |
 |---|---|
 | Shooting | Eigener **geschützter Ordner** je Shooting (Pool „Shootings“ der Website, außerhalb von `public/`): Fotos und Videos direkt im Shooting hochladen (in Stücken, auch große Videos), entfernen, nach Dateinamen sortieren – die Mediathek der Website bleibt frei. Alternativ eine vorhandene Sammlung der Mediathek. Titel, Datum, Begrüßung, Kunde mit E-Mail, Sprache. |
-| Regeln | Dateien im Paket (Obergrenze), Frist („Auswahl bis“), optionale PIN (4–12 Zeichen, getrennt vom Link weitergeben), Notizen je Bild, Herunterladen der Originale. |
+| Regeln | Dateien im Paket (Obergrenze), Frist („Auswahl bis“), optionale PIN (4–12 Zeichen, getrennt vom Link weitergeben), Notizen je Bild. |
+| Schutz bis zur Freigabe | Kunden sehen nur **Bildschirmfassungen** (höchstens 1800 px, WebP) mit **Wasserzeichen**, ins Bild gerechnet; Videos als 720p-Vorschau mit Wasserzeichen (ffmpeg, im Hintergrund). Nie das Original: Die Originale im geschützten Ordner sind ohne Freigabe gesperrt, Rechtsklick und Ziehen sind abgeschaltet. Nur Markieren und Notizen. |
+| Freigabe | Schalter „Freigegeben“ im Shooting: Ansicht ohne Wasserzeichen, Originale herunterladen – z. B. für die Abgabe der fertigen Bilder. Text des Wasserzeichens unter Einstellungen. |
 | Link | `/auswahl/{token}` (32 Zeichen, zufällig). „Neuen Link erzeugen“ macht den alten ungültig; eine neue PIN sperrt offene Sitzungen. Einladung per E-Mail (die PIN steht nie darin). |
-| Für Kunden | Raster in Originalformaten mit Nummer und Dateiname, Herz zum Auswählen, Zähler „3 / 20“ mit Fortschritt, Filter „Ausgewählt“ und „Mit Notiz“, Großansicht (Pfeiltasten, Wischen, `P` wählt aus, Notiz, Herunterladen), „Auswahl abschicken“ mit Nachricht. Alles wird sofort gespeichert. |
+| Für Kunden | Raster in Originalformaten mit Nummer und Dateiname, Herz zum Auswählen, Zähler „3 / 20“ mit Fortschritt, Filter „Ausgewählt“ und „Mit Notiz“, Großansicht mit Wechseleffekten (Pfeiltasten, Wischen, `P` wählt aus, Notiz; Herunterladen erst nach Freigabe), „Auswahl abschicken“ mit Nachricht. Alles wird sofort gespeichert. |
 | Für das Studio | Übersicht als Karten mit Stand, Detail mit Link, Einladung, Auswahl samt Notizen, **Dateinamen zum Kopieren** (Filter in Lightroom, Capture One, Photo Mechanic), CSV, Wieder öffnen, Abschließen, Zurücksetzen. E-Mail bei eingegangener Auswahl (Antwortadresse = Kunde), Push-Mitteilung, Kachel in der Übersicht. |
 
 Barrierefrei (WCAG 2.2 AA): Schaltflächen mit `aria-pressed`, `<dialog>` mit Fokus zurück, Tastatur, `prefers-reduced-motion`,

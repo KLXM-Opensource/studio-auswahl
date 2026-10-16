@@ -96,21 +96,38 @@ if (root) {
     b.setAttribute('aria-pressed', String(on));
     $('[data-aw-lbpick-l]', lb).textContent = on ? T('picked') : T('pick');
   };
-  const show = li => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const EASE = 'cubic-bezier(.2,.75,.15,1)';
+  const show = (li, dir = 0) => {
     current = li;
     const list = visible();
-    stage.replaceChildren();
+    const old = stage.lastElementChild;
+    [...stage.children].forEach(c => { if (c !== old) c.remove(); });   // schnelles Blättern: ältere Bilder sofort weg
+    old?.pause?.();
+    if (old && dir && !reduce) {
+      // altes Bild gleitet hinaus, neues herein (Web Animations)
+      old.animate([{ transform: 'none', opacity: 1 }, { transform: `translateX(${-dir * 16}%) scale(.96)`, opacity: 0 }], { duration: 380, easing: EASE, fill: 'forwards' })
+        .finished.finally(() => old.remove());
+    } else stage.replaceChildren();
     let el;
-    if (li.dataset.kind === 'video') {
+    if (li.dataset.kind === 'video' && !li.dataset.full) {
+      // Vorschau des Videos noch nicht fertig: Standbild mit Hinweis
+      el = document.createElement('img');
+      el.src = li.dataset.poster || ''; el.alt = li.dataset.alt || li.dataset.name; el.draggable = false;
+      setTimeout(() => toast(T('wait')), 50);
+    } else if (li.dataset.kind === 'video') {
       el = document.createElement('video');
       el.src = li.dataset.full; el.controls = true; el.playsInline = true; el.preload = 'metadata';
+      if (root.dataset.released !== '1') el.setAttribute('controlsList', 'nodownload noplaybackrate');
       if (li.dataset.poster) el.poster = li.dataset.poster;
     } else {
       el = document.createElement('img');
-      el.src = li.dataset.full; el.alt = li.dataset.alt || li.dataset.name; el.decoding = 'async';
+      el.src = li.dataset.full; el.alt = li.dataset.alt || li.dataset.name; el.decoding = 'async'; el.draggable = false;
       el.width = +li.dataset.w; el.height = +li.dataset.h;
     }
     stage.append(el);
+    if (!reduce) el.animate(dir ? [{ transform: `translateX(${dir * 14}%) scale(1.02)`, opacity: 0, filter: 'blur(6px)' }, { transform: 'none', opacity: 1, filter: 'none' }]
+      : [{ transform: 'scale(.94)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: dir ? 500 : 420, easing: EASE });
     $('[data-aw-pos]', lb).textContent = fill(T('of'), { i: list.indexOf(li) + 1, n: list.length });
     $('[data-aw-name]', lb).textContent = li.dataset.name;
     const note = $('#aw-note', lb);
@@ -127,7 +144,7 @@ if (root) {
     const list = visible();
     if (!list.length) return;
     const i = list.indexOf(current);
-    show(list[(i + d + list.length) % list.length]);
+    show(list[(i + d + list.length) % list.length], d);
   };
   const open = li => { opener = document.activeElement; show(li); lb.showModal(); };
   root.addEventListener('click', e => {
@@ -184,6 +201,14 @@ if (root) {
   const head = [...document.querySelectorAll('header')].find(h => !root.contains(h) && /sticky|fixed/.test(getComputedStyle(h).position));
   const top = () => root.style.setProperty('--aw-top', head ? Math.max(0, Math.round(head.getBoundingClientRect().bottom)) + 'px' : '0px');
   if (head) { top(); addEventListener('resize', top, { passive: true }); addEventListener('scroll', top, { passive: true }); }
+
+  // Ohne Freigabe: Bilder nicht per Rechtsklick oder Ziehen speichern (das Wasserzeichen ist ohnehin im Bild)
+  if (root.dataset.released !== '1') {
+    const block = e => { if (e.target.closest('img, video')) e.preventDefault(); };
+    document.addEventListener('contextmenu', block);
+    document.addEventListener('dragstart', block);
+    lb.addEventListener('contextmenu', block);
+  }
 
   counts();
 }

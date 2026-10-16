@@ -1,5 +1,11 @@
 # Changelog – Bildauswahl
 
+## 0.3.0 – 2026-10-16
+
+- **Schutz bis zur Freigabe:** Kunden sehen nur Bildschirmfassungen (höchstens 1800 px) mit eingerechnetem Wasserzeichen, Videos als 720p-Vorschau mit Wasserzeichen (ffmpeg, im Hintergrund und als geplante Aufgabe `auswahl:videos`). Die Originale sind ohne Freigabe auch für entsperrte Sitzungen gesperrt; Rechtsklick und Ziehen auf Bildern sind abgeschaltet.
+- **Freigabe** im Shooting („Freigegeben: Originale ohne Wasserzeichen“): Ansicht ohne Wasserzeichen und Herunterladen der Originale. Text des Wasserzeichens unter Einstellungen.
+- Großansicht: Bilder gleiten beim Blättern mit Überblendung, öffnen mit leichtem Zoom; schnelles Blättern hinterlässt keine Reste.
+
 ## 0.2.0 – 2026-10-16
 
 - **Geschützter Ordner je Shooting:** Neue Shootings bekommen eine eigene Sammlung im geschützten Pool „Shootings“ der Website – die Mediathek bleibt frei. Fotos und Videos direkt im Shooting hochladen (Ablagefläche, in Stücken, mit Fortschritt), entfernen, nach Dateinamen sortieren. Löschen eines Shootings löscht seine Dateien.

@@ -161,14 +161,48 @@ final class SiteController
         return Response::redirect(Auswahl::link($s), 303);
     }
 
+    /** GET …/bild/{id}/{size} – Bildschirmfassung (s|l), ohne Freigabe mit Wasserzeichen; nie das Original */
+    public function image(Request $r, string $token, string $id, string $size): Response
+    {
+        $s = $this->shoot($r, $token);
+        if (!Auswahl::viewable($s) || !Auswahl::unlocked($s) || !isset(Preview::SIZES[$size])) throw new HttpException(404);
+        $m = $this->item($s, (int) $id);
+        $file = Repo::inPool($s, fn() => Preview::image($s, $m, $size));
+        if (!$file) throw new HttpException(404);
+        return $this->stream($file, $r);
+    }
+
+    /** GET …/film/{id} – Videovorschau (720p, ohne Freigabe mit Wasserzeichen) */
+    public function film(Request $r, string $token, string $id): Response
+    {
+        $s = $this->shoot($r, $token);
+        if (!Auswahl::viewable($s) || !Auswahl::unlocked($s)) throw new HttpException(404);
+        $m = $this->item($s, (int) $id);
+        $file = Preview::video($s, $m);
+        if (!$file) throw new HttpException(404);
+        return $this->stream($file, $r);
+    }
+
+    private function item(array $s, int $id): array
+    {
+        if (!Repo::hasItem($s, $id) || !($m = Repo::inPool($s, fn() => Media::find($id)))) throw new HttpException(404);
+        return $m;
+    }
+
+    /** Privat zwischenspeichern, nie öffentlich; Byte-Bereiche für Videos (Core\Http\Controllers\ProtectedMediaController::send) */
+    private function stream(string $file, Request $r): Response
+    {
+        return \Core\Http\Controllers\ProtectedMediaController::send($file, $r);
+    }
+
     /** GET …/datei/{id} – Originaldatei herunterladen (nur wenn das Studio es erlaubt) */
     public function download(Request $r, string $token, string $id): Response
     {
         $s = $this->shoot($r, $token);
         if (!(int) $s['allow_download'] || !Auswahl::viewable($s) || !Auswahl::unlocked($s)) throw new HttpException(404);
         $mid = (int) $id;
-        if (!Repo::hasItem($s, $mid) || !($m = Repo::inPool($s, fn() => Media::find($mid)))) throw new HttpException(404);
-        $file = Media::localFile($m);
+        $m = $this->item($s, $mid);
+        $file = Repo::inPool($s, fn() => Media::localFile($m));
         if (!is_file($file)) throw new HttpException(404);
         $name = (string) preg_replace('~[^A-Za-z0-9._-]+~', '-', (string) ($m['original_name'] ?: basename($file))) ?: 'datei';
         while (ob_get_level()) ob_end_clean();

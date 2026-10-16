@@ -6,6 +6,8 @@
  */
 use Core\Media;
 use Klxm\Auswahl\Auswahl;
+use Klxm\Auswahl\Preview;
+use Klxm\Auswahl\Repo;
 
 $i = require __DIR__ . '/_icons.php';
 $max = (int) $shoot['max_picks'];
@@ -18,7 +20,7 @@ $state = $shoot['status'] === 'submitted' ? 'submitted' : ($expired ? 'expired' 
 ?>
 <div class="aw" data-aw
   data-csrf="<?= e(\Core\Csrf::token()) ?>" data-pick="<?= e(Auswahl::link($shoot, 'wahl')) ?>" data-note="<?= e(Auswahl::link($shoot, 'notiz')) ?>"
-  data-package="<?= $max ?>" data-editable="<?= $editable ? '1' : '0' ?>" data-comments="<?= $comments ? '1' : '0' ?>"
+  data-package="<?= $max ?>" data-released="<?= $download ? '1' : '0' ?>" data-t-wait="<?= e(lt('Die Vorschau dieses Videos wird noch erstellt – bitte später noch einmal ansehen.')) ?>" data-editable="<?= $editable ? '1' : '0' ?>" data-comments="<?= $comments ? '1' : '0' ?>"
   data-t-pick="<?= e(lt('Auswählen')) ?>" data-t-picked="<?= e(lt('Ausgewählt')) ?>" data-t-saved="<?= e(lt('Gespeichert')) ?>"
   data-t-error="<?= e(lt('Das hat nicht geklappt. Bitte erneut versuchen.')) ?>" data-t-of="<?= e(lt('{i} von {n}')) ?>"
   data-t-count="<?= e($max ? lt('{n} von {max} ausgewählt') : lt('{n} ausgewählt')) ?>">
@@ -48,6 +50,7 @@ $state = $shoot['status'] === 'submitted' ? 'submitted' : ($expired ? 'expired' 
     <?php elseif ($state === 'expired'): ?>
       <p class="aw-note aw-note--error"><?= e(lt('Die Frist für die Auswahl ist abgelaufen. Bitte wenden Sie sich an {name}.', ['name' => site_name()])) ?></p>
     <?php else: ?>
+      <?php if (!$download): ?><p class="aw-how"><?= $i('lock') ?> <?= e(lt('Vorschau mit Wasserzeichen – die Originale erhalten Sie nach der Freigabe durch {name}.', ['name' => site_name()])) ?></p><?php endif; ?>
       <noscript><p class="aw-note aw-note--error"><?= e(lt('Zum Auswählen bitte JavaScript einschalten.')) ?></p></noscript>
       <p class="aw-how"><?= $i('heart') ?> <?= e(lt('Tippen Sie auf das Herz, um ein Bild auszuwählen. Groß ansehen mit einem Klick aufs Bild – dort geht es mit den Pfeiltasten weiter, „P“ wählt aus.')) ?></p>
     <?php endif; ?>
@@ -71,18 +74,22 @@ $state = $shoot['status'] === 'submitted' ? 'submitted' : ($expired ? 'expired' 
         $id = (int) $m['id'];
         $p = $picks[$id] ?? ['picked' => false, 'note' => ''];
         $video = str_starts_with((string) $m['mime'], 'video/');
-        $poster = $video ? Media::posterFor($m) : $m;
+        $poster = $video ? Repo::inPool($shoot, fn() => Media::posterFor($m)) : $m;
         $n = $name($m);
-        $full = $video ? Media::url($m) : Media::url($m, 2000);
+        // Nur Vorschauen (Bildschirmgröße, ohne Freigabe mit Wasserzeichen) – nie die Adressen der Originale
+        $thumb = $poster ? Auswahl::link($shoot, 'bild/' . $id . '/s') : '';
+        $film = $video && Preview::video($shoot, $m) ? Auswahl::link($shoot, 'film/' . $id) : '';
+        $full = $video ? $film : Auswahl::link($shoot, 'bild/' . $id . '/l');
         $w = (int) ($poster['width'] ?? $m['width'] ?? 0) ?: 4; $h = (int) ($poster['height'] ?? $m['height'] ?? 0) ?: 3;
+        if ($w > Preview::SIZES['s'] || $h > Preview::SIZES['s']) { $sc = Preview::SIZES['s'] / max($w, $h); $w = (int) round($w * $sc); $h = (int) round($h * $sc); }
     ?>
     <li class="aw-item<?= $p['picked'] ? ' is-picked' : '' ?><?= $p['note'] !== '' ? ' has-note' : '' ?>" data-aw-item data-id="<?= $id ?>"
       data-kind="<?= $video ? 'video' : 'image' ?>" data-full="<?= e($full) ?>" data-name="<?= e($n) ?>" data-alt="<?= e(Media::alt($m)) ?>"
-      data-w="<?= $w ?>" data-h="<?= $h ?>" data-note="<?= e($p['note']) ?>"<?= $video && $poster ? ' data-poster="' . e(Media::url($poster, 1600)) . '"' : '' ?>
+      data-w="<?= $w ?>" data-h="<?= $h ?>" data-note="<?= e($p['note']) ?>"<?= $video && $poster ? ' data-poster="' . e(Auswahl::link($shoot, 'bild/' . $id . '/l')) . '"' : '' ?>
       <?= $download ? ' data-download="' . e(Auswahl::link($shoot, 'datei/' . $id)) . '"' : '' ?>>
       <figure class="aw-fig">
         <a class="aw-open" href="<?= e($full) ?>" data-aw-open aria-label="<?= e(lt('Groß ansehen: {name}', ['name' => $n])) ?>">
-          <?php if ($poster): ?><?= Media::pictureOf($poster, '(min-width: 72rem) 24rem, (min-width: 40rem) 33vw, 50vw', ['alt' => '', 'fit' => false]) ?>
+          <?php if ($thumb !== ''): ?><img src="<?= e($thumb) ?>" alt="" width="<?= $w ?>" height="<?= $h ?>" loading="<?= $k < 6 ? 'eager' : 'lazy' ?>" decoding="async" draggable="false">
           <?php else: ?><span class="aw-ph" data-w="<?= $w ?>" data-h="<?= $h ?>"></span><?php endif; ?>
           <?php if ($video): ?><span class="aw-play"><?= $i('play') ?></span><?php endif; ?>
         </a>

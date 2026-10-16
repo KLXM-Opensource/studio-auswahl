@@ -65,4 +65,7 @@ return [
     '{n} Dateien' => '{n} files',
     '{n} ausgewählt' => '{n} selected',
     '{n} von {max} ausgewählt' => '{n} of {max} selected',
+    'Vorschau' => 'Preview',
+    'Vorschau mit Wasserzeichen – die Originale erhalten Sie nach der Freigabe durch {name}.' => 'Preview with watermark – you will receive the originals once {name} releases them.',
+    'Die Vorschau dieses Videos wird noch erstellt – bitte später noch einmal ansehen.' => 'The preview of this video is still being created – please check again later.',
 ];

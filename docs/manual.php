@@ -7,6 +7,13 @@
     <li>Die Dateien liegen in einem <b>geschützten Ordner</b> außerhalb der Website: nicht in der Mediathek, nicht in der Suche, nur für Sie und für Kunden mit dem Link abrufbar. Wer möchte, wählt stattdessen eine vorhandene Sammlung der Mediathek.</li>
     <li>Regeln: <b>Dateien im Paket</b> (z. B. 20 – mehr lassen sich nicht auswählen; 0 = beliebig viele), <b>Auswahl bis</b> (Frist), <b>PIN</b> (4–12 Ziffern oder Buchstaben, getrennt vom Link weitergeben, z. B. per SMS), Notizen erlauben, Herunterladen der Originale erlauben.</li>
   </ol>
+  <h3>Schutz bis zur Freigabe</h3>
+  <ul>
+    <li>Solange Sie ein Shooting nicht freigeben, sehen Ihre Kunden nur <b>Vorschauen in Bildschirmgröße mit Wasserzeichen</b> – nie die Originale. Videos erscheinen als Vorschau in 720p, ebenfalls mit Wasserzeichen; sie entsteht kurz nach dem Hochladen im Hintergrund.</li>
+    <li>Ohne Freigabe können Kunden nur auswählen und Notizen schreiben. Wer ein Bild trotzdem speichert, hat das Wasserzeichen im Bild.</li>
+    <li><b>Freigeben</b>: Shooting bearbeiten → „Freigegeben: Originale ohne Wasserzeichen“. Danach sind die Bilder ohne Wasserzeichen zu sehen und die Originale lassen sich herunterladen – ideal, um die fertigen Bilder über denselben Link abzugeben.</li>
+    <li>Den Text des Wasserzeichens legen Sie unter <b>Bildauswahl → Einstellungen</b> fest (Standard: „© Name der Website · Vorschau“).</li>
+  </ul>
   <h3>Link teilen</h3>
   <ul>
     <li>Auf der Seite des Shootings: <b>Kopieren</b> oder <b>Einladung senden</b> (E-Mail mit Link, Paketgröße und Frist – die PIN steht nie in der E-Mail).</li>

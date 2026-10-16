@@ -68,8 +68,8 @@ final class AdminController extends \Core\Http\Controllers\Admin\AdminController
                 'help' => $new ? __('4–12 Ziffern oder Buchstaben. Schicken Sie sie getrennt vom Link, z. B. per SMS.') : __('Leer lassen = bisherige PIN behalten. Eine neue PIN sperrt geöffnete Sitzungen.')],
             ['name' => 'lang', 'label' => __('Sprache für Kundin bzw. Kunde'), 'type' => 'select', 'width' => 'half', 'options' => ['' => __('Standardsprache der Website')] + $langs],
             ['name' => 'allow_comments', 'label' => __('Notizen zu einzelnen Bildern erlauben'), 'type' => 'bool', 'default' => true, 'width' => 'half'],
-            ['name' => 'allow_download', 'label' => __('Herunterladen der Originale erlauben'), 'type' => 'bool', 'default' => false, 'width' => 'half',
-                'help' => __('Zum Beispiel für die Abgabe der fertigen Bilder über denselben Link.')],
+            ['name' => 'allow_download', 'label' => __('Freigegeben: Originale ohne Wasserzeichen'), 'type' => 'bool', 'default' => false, 'width' => 'half',
+                'help' => __('Erst mit Freigabe sehen Kunden die Bilder ohne Wasserzeichen und können die Originale herunterladen – z. B. für die Abgabe der fertigen Bilder über denselben Link. Ohne Freigabe: nur Ansehen in Bildschirmgröße mit Wasserzeichen, Markieren und Notizen.')],
         ];
         if ($pool) $f = array_values(array_filter($f, fn($x) => ($x['name'] ?? '') !== 'collection_id'));
         if (!$new) {
@@ -284,6 +284,7 @@ final class AdminController extends \Core\Http\Controllers\Admin\AdminController
         }
         if (!$m) return Response::fail((string) $err);
         Repo::update((int) $s['id'], []);
+        if (str_starts_with((string) $m['mime'], 'video/')) Preview::flag();
         return Response::json(['ok' => true, 'id' => (int) $m['id'], 'name' => $name, 'count' => count(Repo::items($s))]);
     }
 
@@ -294,6 +295,7 @@ final class AdminController extends \Core\Http\Controllers\Admin\AdminController
         $s = $this->poolShoot($id);
         if (!Repo::hasItem($s, (int) $mid)) throw new HttpException(404);
         Repo::inPool($s, fn() => Media::delete((int) $mid, true));
+        Preview::forget($s, (int) $mid);
         app()->db->query('DELETE FROM auswahl_picks WHERE shoot_id = ? AND media_id = ?', [(int) $s['id'], (int) $mid]);
         return $this->to(Auswahl::ADMIN . '/' . $id . '#dateien', 'success', __('Datei entfernt.'));
     }
@@ -316,7 +318,8 @@ final class AdminController extends \Core\Http\Controllers\Admin\AdminController
     public function settings(Request $r): Response
     {
         $this->guard($r);
-        return $this->page('settings', ['title' => __('Einstellungen'), 'values' => ['notify' => (string) app()->settings->get('auswahl.notify', '')]]);
+        return $this->page('settings', ['title' => __('Einstellungen'), 'values' => ['notify' => (string) app()->settings->get('auswahl.notify', ''),
+            'watermark' => (string) app()->settings->get('auswahl.watermark', '')]]);
     }
 
     public function saveSettings(Request $r): Response
@@ -326,6 +329,12 @@ final class AdminController extends \Core\Http\Controllers\Admin\AdminController
         $bad = array_filter(array_map('trim', explode(',', $raw)), fn($e) => $e !== '' && !filter_var($e, FILTER_VALIDATE_EMAIL));
         if ($bad) return $this->page('settings', ['title' => __('Einstellungen'), 'values' => ['notify' => $raw], 'errors' => ['notify' => __('Ungültige Adresse: {list}', ['list' => implode(', ', $bad)])]], 422);
         app()->settings->set('auswahl.notify', $raw);
+        $wm = mb_substr(trim(strip_tags((string) ($r->post['f']['watermark'] ?? ''))), 0, 60);
+        if ($wm !== (string) app()->settings->get('auswahl.watermark', '')) {
+            app()->settings->set('auswahl.watermark', $wm);   // neue Vorschauen entstehen beim nächsten Aufruf (Name enthält den Text)
+            foreach (Repo::shoots() as $sh) Preview::forget($sh);
+            Preview::flag();
+        }
         return $this->to(Auswahl::ADMIN . '/einstellungen', 'success', __('Einstellungen gespeichert.'));
     }
 

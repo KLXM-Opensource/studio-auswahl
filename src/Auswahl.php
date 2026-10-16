@@ -106,7 +106,8 @@ final class Auswahl
         if (!is_array($ok) || !$ok) return false;
         if (!preg_match('~(?:^|/)([0-9a-f]{16})~', (string) ($ctx['path'] ?? ''), $m)) return false;
         $ids = array_map('intval', array_keys($ok));
-        $shoots = app()->db->fetchAll('SELECT * FROM auswahl_shoots WHERE pool = ? AND status <> ? AND id IN (' . implode(',', $ids) . ')', [$pool, 'closed']);
+        // Nur freigegebene Shootings (allow_download): sonst sehen Kunden ausschließlich Vorschauen mit Wasserzeichen (Klasse Preview)
+        $shoots = app()->db->fetchAll('SELECT * FROM auswahl_shoots WHERE pool = ? AND status <> ? AND allow_download = 1 AND id IN (' . implode(',', $ids) . ')', [$pool, 'closed']);
         $db = \Core\MediaPools::db($pool);
         foreach ($shoots as $s) {
             if (!self::unlocked($s)) continue;

@@ -105,7 +105,15 @@ final class SelfTest
             $url = \Core\Media::url($items[0]);
             $eq('Adresse geschützt', str_contains($url, \Core\MediaPools::PROTECTED_PATH . '/' . $pool . '/'), true);
             $path = substr($url, strpos($url, '/' . $pool . '/') + strlen($pool) + 2);
+            $eq('Original ohne Freigabe nie (auch nicht entsperrt)', (function () use ($s, $pool, $path): bool {
+                Auswahl::unlock($s);
+                return Auswahl::mediaAllowed(['pool' => $pool, 'path' => $path], new \Core\Http\Request('GET', '/', [], [], [], []));
+            })(), false);
             $eq('ohne entsperrtes Shooting kein Zugriff', Auswahl::mediaAllowed(['pool' => $pool, 'path' => $path], new \Core\Http\Request('GET', '/', [], [], [], [])), false);
+            $big = Preview::image($s, $items[0], 'l');
+            $eq('Vorschau: WebP, höchstens ' . Preview::SIZES['l'] . ' px, nicht das Original', $big && str_ends_with($big, '.webp') && max(array_slice(getimagesize($big) ?: [0, 0], 0, 2)) <= Preview::SIZES['l']
+                && realpath($big) !== realpath(\Core\Media::localFile($items[0])), true);
+            $eq('Wasserzeichen ohne Freigabe, keins mit Freigabe', [Preview::mark($s) !== '', Preview::mark(['allow_download' => 1] + $s)], [true, '']);
             $eq('fremder Pool: nicht zuständig', Auswahl::mediaAllowed(['pool' => 'mitglieder', 'path' => $path], new \Core\Http\Request('GET', '/', [], [], [], [])), false);
         } finally {
             if ($sid) Repo::delete($sid, true);

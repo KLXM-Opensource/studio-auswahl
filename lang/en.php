@@ -159,4 +159,9 @@ return [
     'Geschützter Ordner: Die Dateien liegen außerhalb der Website und sind nur für Sie und für Kunden mit entsperrtem Link abrufbar – nicht in der Mediathek, nicht in der Suche.' => 'Protected folder: the files are stored outside the website and can only be retrieved by you and by clients with an unlocked link – not in the media library, not in search.',
     '„{name}“ endgültig löschen?' => 'Permanently delete “{name}”?',
     'Entfernen: {name}' => 'Remove: {name}',
+    'Freigegeben: Originale ohne Wasserzeichen' => 'Released: originals without watermark',
+    'Erst mit Freigabe sehen Kunden die Bilder ohne Wasserzeichen und können die Originale herunterladen – z. B. für die Abgabe der fertigen Bilder über denselben Link. Ohne Freigabe: nur Ansehen in Bildschirmgröße mit Wasserzeichen, Markieren und Notizen.' => 'Only once released do clients see the photos without a watermark and can download the originals – e.g. to deliver the finished photos through the same link. Without release: viewing at screen size with a watermark, marking and notes only.',
+    'Text des Wasserzeichens' => 'Watermark text',
+    'Vorschau' => 'Preview',
+    'Erscheint schräg über allen Vorschauen, bis Sie ein Shooting freigeben. {site} = Name der Website. Leer = Standard.' => 'Shown diagonally across all previews until you release a shoot. {site} = name of the website. Empty = default.',
 ];

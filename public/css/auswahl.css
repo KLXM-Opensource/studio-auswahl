@@ -168,3 +168,4 @@
 
 @media print { .aw-bar-sticky, .aw-pick, .aw-lb, .aw-send, .aw-how { display: none !important; } .aw-grid { columns: 3; } }
 @media (forced-colors: active) { .aw-pick[aria-pressed="true"], .aw-item.is-picked .aw-open { outline: 3px solid Highlight; } }
+.aw [hidden], .aw-lb [hidden] { display: none !important; }

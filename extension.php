@@ -25,14 +25,18 @@ use Klxm\Auswahl\SiteController;
 return [
     'name' => 'auswahl',
     'label' => 'Bildauswahl – Kunden wählen Fotos und Videos aus',
-    'version' => '0.2.0',
+    'version' => '0.3.0',
     'requires' => '>=1.0.0',
     'description' => 'Shootings per geheimem Link zeigen (optional mit PIN): Kundinnen und Kunden wählen Fotos und Videos aus, schreiben Notizen und schicken die Auswahl ab.',
     'author' => 'KLXM Crossmedia GmbH and contributors',
     'license' => 'MIT',
     'provides' => ['Menüpunkt „Bildauswahl“ (Shootings, Einstellungen)', 'Kundenseiten unter /auswahl/{link}', 'Recht „Bildauswahl verwalten“',
         'Mitteilung „Auswahl eingegangen“ (E-Mail, Push)'],
-    'commands' => ['auswahl:selftest'],
+    'commands' => ['auswahl:selftest', 'auswahl:videos'],
+    // Geplante Aufgabe (Core\Cron): fehlende Videovorschauen mit Wasserzeichen erzeugen
+    'schedule' => [
+        'videos' => ['label' => 'Bildauswahl: Videovorschauen erzeugen', 'command' => 'auswahl:videos', 'cron' => '*/5 * * * *', 'scope' => 'site', 'timeout' => 900],
+    ],
     'usage' => function (): ?string {
         try {
             $c = Repo::counts();
@@ -84,6 +88,8 @@ return [
             $r->post($b . '/notiz', [$s, 'note']);
             $r->post($b . '/abschicken', [$s, 'submit']);
             $r->get($b . '/datei/{id}', [$s, 'download']);
+            $r->get($b . '/bild/{id}/{size}', [$s, 'image']);
+            $r->get($b . '/film/{id}', [$s, 'film']);
 
             // Verwaltung: Recht + CSRF prüft der Router
             $c = AdminController::class;
@@ -112,6 +118,13 @@ return [
         $x->docs('manual', ['bildauswahl' => ['title' => 'Bildauswahl', 'after' => 'medien', 'file' => __DIR__ . '/docs/manual.php']]);
         $x->docs('technical', ['bildauswahl' => ['title' => 'Bildauswahl (Erweiterung): Kunden wählen Fotos aus', 'part' => 3, 'after' => 'live', 'file' => __DIR__ . '/docs/technical.php']]);
 
+        // Videovorschauen nach der Antwort einer Verwaltungsseite (nur wenn der Merker gesetzt ist – billige Prüfung)
+        $x->afterAdminResponse(fn() => is_file(Klxm\Auswahl\Preview::flag(false)) ? fn() => Klxm\Auswahl\Preview::work(1) : null);
+        $x->command('auswahl:videos', 'Bildauswahl: fehlende Videovorschauen (720p, Wasserzeichen) erzeugen', function (array $args): int {
+            $n = Klxm\Auswahl\Preview::work(20);
+            echo $n . " Videovorschauen erzeugt.\n";
+            return 0;
+        });
         $x->command('auswahl:selftest', 'Bildauswahl: Link, PIN, Regeln (Paket, Frist, Status), Auswahl und Notizen', fn(array $args): int => Klxm\Auswahl\SelfTest::run());
     },
 ];
