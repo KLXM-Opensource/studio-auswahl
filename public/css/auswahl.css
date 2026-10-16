@@ -45,9 +45,7 @@
 .aw-head__text { display: grid; gap: .875rem; }
 .aw .aw-title { font-size: clamp(2.25rem, 1.5rem + 3.5vw, 4.5rem); line-height: 1; letter-spacing: -.02em; font-weight: 400; }
 .aw-meta { margin: 0; display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; color: var(--aw-muted); font-size: .9375rem; }
-.aw-meta span + span::before { content: "·"; margin-inline-end: 1.25rem; opacity: .6; }
-.aw-meta { column-gap: 0; }
-.aw-meta span { margin-inline-end: 1.25rem; }
+
 .aw-progress { min-width: 12rem; display: grid; gap: .375rem; justify-items: start; }
 @media (min-width: 48rem) { .aw-progress { justify-items: end; text-align: end; } }
 .aw-progress p { margin: 0; }
@@ -61,7 +59,7 @@
 .aw-how { margin: 0 0 1rem; color: var(--aw-muted); font-size: .9375rem; display: flex; gap: .5rem; align-items: baseline; }
 
 /* ---------- Leiste (läuft mit) */
-.aw-bar-sticky { position: sticky; top: var(--header-h, 0px); z-index: 5; padding-block: .625rem; margin-bottom: var(--aw-gap);
+.aw-bar-sticky { position: sticky; top: var(--aw-top, 0px); z-index: 5; padding-block: .625rem; margin-bottom: var(--aw-gap);
   background: color-mix(in srgb, var(--aw-bg) 84%, transparent); backdrop-filter: blur(14px) saturate(1.2); border-block: 1px solid var(--aw-line); }
 .aw-tools { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; justify-content: space-between; }
 .aw-filter { display: flex; flex-wrap: wrap; gap: .375rem; }
@@ -74,7 +72,8 @@
 .aw-send-btn { display: inline-flex; align-items: center; gap: .5rem; }
 
 /* ---------- Raster: Originalformate in Spalten */
-.aw-grid { list-style: none; margin: 0 auto; padding-block-end: clamp(3rem, 2rem + 4vw, 6rem); columns: 2 13rem; column-gap: var(--aw-gap); }
+.aw-grid { list-style: none; margin: 0 auto; padding-block-end: clamp(3rem, 2rem + 4vw, 6rem); columns: 2 9rem; column-gap: var(--aw-gap); }
+@media (min-width: 40rem) { .aw-grid { columns: 2 13rem; } }
 @media (min-width: 64rem) { .aw-grid { columns: 3 16rem; } }
 @media (min-width: 100rem) { .aw-grid { columns: 4 18rem; } }
 .aw-item { break-inside: avoid; margin: 0 0 var(--aw-gap); }

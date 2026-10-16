@@ -180,6 +180,11 @@ if (root) {
   root.querySelector('[data-aw-send]')?.addEventListener('click', () => { counts(); sd?.showModal(); });
   sd?.querySelector('[data-aw-sendclose]')?.addEventListener('click', () => sd.close());
 
+  // Leiste unter einem festen bzw. mitlaufenden Seitenkopf des Kits halten
+  const head = [...document.querySelectorAll('header')].find(h => !root.contains(h) && /sticky|fixed/.test(getComputedStyle(h).position));
+  const top = () => root.style.setProperty('--aw-top', head ? Math.max(0, Math.round(head.getBoundingClientRect().bottom)) + 'px' : '0px');
+  if (head) { top(); addEventListener('resize', top, { passive: true }); addEventListener('scroll', top, { passive: true }); }
+
   counts();
 }
 }
